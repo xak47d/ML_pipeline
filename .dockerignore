@@ -1,0 +1,42 @@
+# Wandb artifacts and logs
+wandb/
+**/wandb/
+artifacts/
+**/artifacts/
+
+# Python cache
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+.pytest_cache/
+
+# DVC cache
+.dvc/cache/
+.dvc/tmp/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+**/.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Logs
+*.log

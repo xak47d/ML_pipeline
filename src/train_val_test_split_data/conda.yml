@@ -1,0 +1,12 @@
+name: train_val_test_split_data
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - wandb
+      - pandas
+      - scikit-learn
+      - numpy
