@@ -1,4 +1,4 @@
-name: test_model
+name: train_model
 channels:
   - conda-forge
   - defaults
@@ -10,4 +10,6 @@ dependencies:
       - pandas
       - mlflow
       - scikit-learn
+      - numpy
+      - xgboost
   

@@ -1,0 +1,36 @@
+name: test_model
+
+entry_points:
+  main:
+    parameters:
+
+      train_artifact:
+        description: Dataset usado para entrenar el modelo
+        type: string
+
+      model_config:
+        description: Configuración del modelo. Un path a un archivo JSON con la configuración que se pasará al constructor del modelo.
+        type: string
+
+      output_artifact:
+        description: Nombre del artefacto de salida
+        type: string
+
+      random_seed:
+        description: Semilla para la reproducibilidad
+        type: string
+        default: 42
+
+      stratify_by:
+        description: Columna para estratificar el conjunto de datos
+        type: string
+        default: null   
+
+    command: >-
+      python run.py --train_artifact {train_artifact} \
+                    --model_config {model_config} \
+                    --output_artifact {output_artifact} \
+                    --stratify_by {stratify_by} \
+                    --random_seed {random_seed}
+                    
+                    

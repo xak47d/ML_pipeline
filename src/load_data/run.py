@@ -14,15 +14,19 @@ logger = logging.getLogger(__name__)
     
 
 def go(args):
+    """
+    Carga un conjunto de datos local a Weights & Biases como un artefacto
+    """
+    logger.info("*"*50)
+    logger.info("Iniciando proceso de carga de datos")
+    logger.info("*"*50)
 
     run = wandb.init(
-        project="my_ml_project",
         job_type="load_data"
     )
-
     run.config.update(args)
 
-    logger.info(f"Uploading {args.artifact_name} to Weights & Biases")
+    logger.info(f"Cargando {args.artifact_name} a Weights & Biases")
 
     artifact = wandb.Artifact(
         args.artifact_name,
@@ -30,24 +34,44 @@ def go(args):
         description=args.artifact_description,
     )
 
-    artifact.add_file(os.path.join("data", args.sample))
+    artifact.add_file(os.path.join("data", args.dataset))
     
     run.log_artifact(artifact)
 
     artifact.wait()
 
+    logger.info("*"*50)
+    logger.info("Proceso de carga de datos finalizado")
+    logger.info("*"*50)
+
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Download URL to a local destination")
-
-    parser.add_argument("sample", type=str, help="Name of the sample to download")
-
-    parser.add_argument("artifact_name", type=str, help="Name for the output artifact")
-
-    parser.add_argument("artifact_type", type=str, help="Output artifact type.")
+    parser = argparse.ArgumentParser(
+            description="Carga un conjunto de datos local a Weights & Biases como un artefacto"
+        )
 
     parser.add_argument(
-        "artifact_description", type=str, help="A brief description of this artifact"
+            "--dataset", 
+            type=str, 
+            help="Nombre del conjunto de datos a cargar (debe estar en la carpeta data)"
+        )
+
+    parser.add_argument(
+            "--artifact_name", 
+            type=str, 
+            help="Nombre del artefacto de salida"
+        )
+
+    parser.add_argument(
+        "--artifact_type", 
+        type=str, 
+        help="Tipo de artefacto de salida"
+    )
+
+    parser.add_argument(
+        "--artifact_description", 
+        type=str, 
+        help="Una breve descripción de este artefacto"
     )
 
     args = parser.parse_args()

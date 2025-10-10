@@ -1,5 +1,4 @@
 name: train_val_test_split_data
-conda_env: conda.yml
 
 entry_points:
   main:
@@ -14,11 +13,6 @@ entry_points:
         type: float
         default: 0.2
 
-      val_size:
-        description: Proporción de datos para validation
-        type: float
-        default: 0.2
-
       random_state:
         description: Seed para reproducibilidad
         type: int
@@ -29,4 +23,8 @@ entry_points:
         type: string
         default: "none"
         
-    command: "python run.py {input_artifact} {test_size} {val_size} {random_state} {stratify_column}"
+    command: >-
+      python run.py --input_artifact {input_artifact} \
+                    --test_size {test_size} \
+                    --random_state {random_state} \
+                    --stratify_column {stratify_column}

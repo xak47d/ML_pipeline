@@ -1,27 +1,53 @@
+defaults:
+  - override hydra/sweeper: optuna
+  - override hydra/sweeper/sampler: tpe
+
 main:
   project_name: "my_ml_project"
-  experiment_name: "random_forest_experiment"
+  experiment_name: "experiment"
   steps: "all"  # o "download,basic_cleaning,train_random_forest"
 
 data_processing:
-  sample: "student_entry_performance_modified.csv"
+  dataset: "student_entry_performance_modified.csv"
   test_size: 0.2
-  val_size: 0.2
   random_state: 42
   stratify_column: "Performance"
 
 
-# modeling:
-#   test_size: 0.2
-#   val_size: 0.2
-#   random_seed: 42
-#   stratify_by: "price_category"
-#   max_tfidf_features: 100
+modeling:
+  random_seed: 42
+  stratify_by: "Performance"
   
-#   random_forest:
-#     n_estimators: 100
-#     max_depth: 10
-#     min_samples_split: 2
+  xgboost:
+    n_estimators: 500
+    learning_rate: 0.1
+    max_depth: 3
+    min_child_weight: 1
+    subsample: 0.8
+    colsample_bytree: 0.8
+    gamma: 0
+    reg_alpha: 0
+    reg_lambda: 1
+    scale_pos_weight: 1
 
-# data_check:
-#   kl_threshold: 0.2
+hydra:
+  sweeper:
+    sampler:
+      seed: 42
+    
+    direction: maximize
+    study_name: xgboost_hyperparameter_optimization
+    storage: null
+    n_trials: 10
+    n_jobs: 1
+    
+    params:
+      +modeling.xgboost.n_estimators: range(100, 1000, step=100)
+      +modeling.xgboost.learning_rate: tag(log, interval(0.01, 0.3))
+      +modeling.xgboost.max_depth: range(2, 10)
+      +modeling.xgboost.min_child_weight: range(1, 10)
+      +modeling.xgboost.subsample: interval(0.6, 1.0)
+      +modeling.xgboost.colsample_bytree: interval(0.6, 1.0)
+      +modeling.xgboost.gamma: interval(0.0, 5.0)
+      +modeling.xgboost.reg_alpha: interval(0.0, 10.0)
+      +modeling.xgboost.reg_lambda: interval(0.0, 10.0)

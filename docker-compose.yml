@@ -3,6 +3,9 @@ services:
     build: .
     volumes:
       - ./src:/app/src
+      - ./outputs:/app/outputs
+      - ./multirun:/app/multirun        
+      - ./.wandb_cache:/root/.cache/wandb
     ports:
       - "8888:8888"
     env_file:

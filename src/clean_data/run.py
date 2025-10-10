@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 """
-Performs basic cleaning on the data and store the results in Weights & Biases
+Realiza operaciones básicas de limpieza en el conjunto de datos y guarda los
+resultados en Weights & Biases.
 """
 import os
 import argparse
@@ -11,15 +12,20 @@ import wandb
 
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)-15s %(message)s")
-logger = logging.getLogger()
+logger = logging.getLogger(__name__)
 
 
 def go(args):
     """
-    Main function, implementation of basic cleaning operations
+    Implementación de funciones básicas de limpieza
     """
+    logger.info("*"*50)
+    logger.info("Iniciando proceso de limpieza")
+    logger.info("*"*50)
 
-    run = wandb.init(project="my_ml_project", job_type="basic_cleaning")
+    run = wandb.init(
+        job_type="basic_cleaning"
+    )
     run.config.update(args)
 
     artifact = run.use_artifact(args.input_artifact)
@@ -30,7 +36,7 @@ def go(args):
     # TODO: Añadir aquí las operaciones de limpieza
     ############################################################################
 
-    logger.info(f"Dataframe shape: {df.shape}")
+    logger.info(f"Forma del dataframe resultante: {df.shape}")
 
     filename = args.output_artifact
     df.to_csv(filename, index=False)
@@ -44,38 +50,46 @@ def go(args):
     artifact.add_file(filename)
     run.log_artifact(artifact)
 
+    artifact.wait()
+
     os.remove(filename)
+
+    logger.info("*"*50)
+    logger.info("Proceso de limpieza finalizado")
+    logger.info("*"*50)
 
 
 if __name__ == "__main__":
 
-    parser = argparse.ArgumentParser(description="This step cleans the data")
+    parser = argparse.ArgumentParser(
+            description="Este componente realiza una limpieza básica de datos"
+        )
 
     parser.add_argument(
         "--input_artifact",
         type=str,
-        help="Input file",
+        help="Archivo objetivo",
         required=True
     )
 
     parser.add_argument(
         "--output_artifact",
         type=str,
-        help="output file",
+        help="Archivo de salida",
         required=True
     )
 
     parser.add_argument(
         "--output_type",
         type=str,
-        help="output type",
+        help="Tipo de salida",
         required=True
     )
 
     parser.add_argument(
         "--output_description",
         type=str,
-        help="File processed by eliminating outliers",
+        help="Archivo procesado por la eliminación de valores atípicos",
         required=True
     )
 

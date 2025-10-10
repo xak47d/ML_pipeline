@@ -1,6 +1,9 @@
 name: eda
-conda_env: conda.yml
 
 entry_points:
   main:
-    command: "jupyter lab --ip=0.0.0.0 --port=8888 --no-browser --allow-root"
+    command: >-
+      jupyter lab --ip=0.0.0.0 \
+                  --port=8888 \
+                  --no-browser \
+                  --allow-root

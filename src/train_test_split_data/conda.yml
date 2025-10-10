@@ -1,4 +1,4 @@
-name: train_val_test_split_data
+name: train_test_split_data
 channels:
   - conda-forge
   - defaults
