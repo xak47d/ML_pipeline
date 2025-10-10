@@ -24,3 +24,7 @@ __pycache__/
 venv/
 env/
 .venv/
+
+# DVC
+.dvc/config.local
+.dvc/tmp
