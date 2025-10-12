@@ -1,0 +1,10 @@
+- ++modeling.xgboost.n_estimators=700
+- ++modeling.xgboost.learning_rate=0.030816017044468066
+- ++modeling.xgboost.max_depth=2
+- ++modeling.xgboost.min_child_weight=4
+- ++modeling.xgboost.subsample=0.7300733288106989
+- ++modeling.xgboost.colsample_bytree=0.8918424713352255
+- ++modeling.xgboost.gamma=3.1877873567760657
+- ++modeling.xgboost.reg_alpha=8.872127425763265
+- ++modeling.xgboost.reg_lambda=4.722149251619493
+- main.steps=train_model

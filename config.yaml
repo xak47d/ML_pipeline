@@ -28,7 +28,6 @@ modeling:
     gamma: 0
     reg_alpha: 0
     reg_lambda: 1
-    scale_pos_weight: 1
 
 hydra:
   sweeper:
@@ -42,12 +41,12 @@ hydra:
     n_jobs: 1
     
     params:
-      +modeling.xgboost.n_estimators: range(100, 1000, step=100)
-      +modeling.xgboost.learning_rate: tag(log, interval(0.01, 0.3))
-      +modeling.xgboost.max_depth: range(2, 10)
-      +modeling.xgboost.min_child_weight: range(1, 10)
-      +modeling.xgboost.subsample: interval(0.6, 1.0)
-      +modeling.xgboost.colsample_bytree: interval(0.6, 1.0)
-      +modeling.xgboost.gamma: interval(0.0, 5.0)
-      +modeling.xgboost.reg_alpha: interval(0.0, 10.0)
-      +modeling.xgboost.reg_lambda: interval(0.0, 10.0)
+      ++modeling.xgboost.n_estimators: range(100, 1000, step=100)
+      ++modeling.xgboost.learning_rate: tag(log, interval(0.01, 0.3))
+      ++modeling.xgboost.max_depth: range(2, 10)
+      ++modeling.xgboost.min_child_weight: range(1, 10)
+      ++modeling.xgboost.subsample: interval(0.6, 1.0)
+      ++modeling.xgboost.colsample_bytree: interval(0.6, 1.0)
+      ++modeling.xgboost.gamma: interval(0.0, 5.0)
+      ++modeling.xgboost.reg_alpha: interval(0.0, 10.0)
+      ++modeling.xgboost.reg_lambda: interval(0.0, 10.0)

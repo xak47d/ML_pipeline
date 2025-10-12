@@ -1,0 +1,22 @@
+main:
+  project_name: my_ml_project
+  experiment_name: experiment
+  steps: train_model
+data_processing:
+  dataset: student_entry_performance_modified.csv
+  test_size: 0.2
+  random_state: 42
+  stratify_column: Performance
+modeling:
+  random_seed: 42
+  stratify_by: Performance
+  xgboost:
+    n_estimators: 400
+    learning_rate: 0.2536999076681772
+    max_depth: 8
+    min_child_weight: 6
+    subsample: 0.6624074561769746
+    colsample_bytree: 0.662397808134481
+    gamma: 0.2904180608409973
+    reg_alpha: 8.661761457749352
+    reg_lambda: 6.011150117432088

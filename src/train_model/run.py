@@ -8,12 +8,14 @@ import shutil
 import json
 
 import wandb
+import pickle
 
 import pandas as pd
 import mlflow
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, classification_report
 from sklearn.model_selection import StratifiedKFold, cross_val_score
 from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import LabelEncoder
 
 from xgboost import XGBClassifier
 
@@ -51,12 +53,25 @@ def go(args):
 
     logger.info(f"Datos: {X.shape[0]} muestras, {X.shape[1]} features")
 
+    label_encoder = LabelEncoder()
+    y_encoded = label_encoder.fit_transform(y)
+
+    class_mapping = dict(
+            zip(
+                label_encoder.classes_, 
+                label_encoder.transform(label_encoder.classes_)
+            )
+        )
+
+    logger.info(f"Mapeo de clases: {class_mapping}")
+
+    run.config.update({"class_mapping": class_mapping})
+
     preprocessor = get_preprocessor()
 
     xgb_model = XGBClassifier(
         objective='multi:softprob',
         eval_metric='mlogloss', 
-        use_label_encoder=False,
         **xgb_config
     )
 
@@ -73,7 +88,7 @@ def go(args):
     cv_scores = cross_val_score(
             model_pipeline, 
             X, 
-            y, 
+            y_encoded, 
             cv=skfold, 
             scoring='accuracy', 
             n_jobs=-1
@@ -103,19 +118,22 @@ def go(args):
 
     logger.info("Entrenando el modelo")
 
-    model_pipeline.fit(X, y)
+    model_pipeline.fit(X, y_encoded)
     y_pred = model_pipeline.predict(X)
     
-    train_accuracy = accuracy_score(y, y_pred)
-    train_f1_macro = f1_score(y, y_pred, average='macro')
-    train_f1_weighted = f1_score(y, y_pred, average='weighted')
-    
+    train_accuracy = accuracy_score(y_encoded, y_pred)
+    train_f1_macro = f1_score(y_encoded, y_pred, average='macro')
+    train_f1_weighted = f1_score(y_encoded, y_pred, average='weighted')
+
     logger.info(f"Train Accuracy: {train_accuracy:.4f}")
     logger.info(f"F1 Macro: {train_f1_macro:.4f}")
     
     run.summary['train_accuracy'] = train_accuracy
     run.summary['train_f1_macro'] = train_f1_macro
     run.summary['train_f1_weighted'] = train_f1_weighted
+
+    with open("label_mapping.pkl", "wb") as f:
+        pickle.dump(label_encoder, f)
 
     # Guardamos el modelo en formato mlflow
     if os.path.exists("xgboost_dir"):
@@ -144,6 +162,7 @@ def go(args):
     )
 
     artifact.add_dir(local_path='xgboost_dir')
+    artifact.add_file("label_mapping.pkl")
 
     run.log_artifact(artifact)
 
