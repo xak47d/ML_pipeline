@@ -1,23 +1,23 @@
 {
-  "cv_accuracy_mean": 0.463982330954808,
-  "cv_accuracy_std": 0.02512781730186987,
+  "cv_accuracy_mean": 0.46763506625891943,
+  "cv_accuracy_std": 0.03222799253447169,
   "cv_scores": [
-    0.46788990825688076,
     0.48623853211009177,
-    0.4954128440366973,
-    0.4351851851851852,
-    0.4351851851851852
+    0.48623853211009177,
+    0.5045871559633027,
+    0.4444444444444444,
+    0.4166666666666667
   ],
   "model_config": {
-    "n_estimators": 700,
-    "learning_rate": 0.030816017044468066,
-    "max_depth": 2,
-    "min_child_weight": 4,
-    "subsample": 0.7300733288106989,
-    "colsample_bytree": 0.8918424713352255,
-    "gamma": 3.1877873567760657,
-    "reg_alpha": 8.872127425763265,
-    "reg_lambda": 4.722149251619493,
+    "n_estimators": 500,
+    "learning_rate": 0.1,
+    "max_depth": 3,
+    "min_child_weight": 1,
+    "subsample": 0.8,
+    "colsample_bytree": 0.8,
+    "gamma": 0,
+    "reg_alpha": 0,
+    "reg_lambda": 1,
     "random_state": 42
   }
 }
