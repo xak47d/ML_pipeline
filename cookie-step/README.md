@@ -6,7 +6,7 @@ Con esta plantilla puedes generar rápidamente nuevos pasos para ser usados con 
 Ejecuta el comando:
 
 ```
-> cookiecutter [ruta a este repositorio] -o [directorio de destino]
+> cookiecutter [ruta a este folder] -o [directorio de destino]
 ```
 
 y sigue las indicaciones. La herramienta te pedirá el nombre del paso, el nombre del script, la descripción, etc. También te pedirá los parámetros del script. Esto debe ser una lista de nombres de parámetros separados por comas *sin espacios*. 
