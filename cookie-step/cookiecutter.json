@@ -1,0 +1,8 @@
+{
+	"step_name": "Nombre del componente",
+	"script_name": "run.py (En caso de que se quiera cambiar el nombre del script)",
+	"job_type": "mi_componente",
+	"short_description": "Mi componente",
+	"long_description": "Un componente implementado con cookiecutter",
+	"parameters": "parameter1,parameter2"
+}
