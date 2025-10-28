@@ -1,6 +1,6 @@
 # Plantilla Cookiecutter para pasos de MLFlow
 
-Utilizando esta plantilla puedes generar rápidamente nuevos pasos para ser usados con MLFlow.
+Con esta plantilla puedes generar rápidamente nuevos pasos para ser usados con MLFlow.
 
 # Uso
 Ejecuta el comando:
