@@ -28,3 +28,8 @@ env/
 # DVC
 .dvc/config.local
 .dvc/tmp
+
+# MLFlow artifacts
+**/artifacts/
+*.csv:*
+*:v*/
