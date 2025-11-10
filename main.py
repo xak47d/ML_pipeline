@@ -8,6 +8,7 @@ import hydra
 import mlflow
 import logging
 from omegaconf import DictConfig
+import fastapi
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -21,10 +22,8 @@ STEPS = [
 ]
 
 
-@hydra.main(version_base=None, config_path=".", config_name="config")
-def go(config: DictConfig):
-    """Main pipeline function"""
-    
+def run_pipeline_impl(config: DictConfig):
+    """Pipeline implementation (callable from both CLI hydra entrypoint and API)."""
     os.environ["WANDB_PROJECT"] = config["main"]["project_name"]
     os.environ["WANDB_RUN_GROUP"] = config["main"]["experiment_name"]
 
@@ -134,5 +133,24 @@ def go(config: DictConfig):
     return cv_accuracy if cv_accuracy is not None else 0.0
 
 
+@hydra.main(version_base=None, config_path=".", config_name="config")
+def go(config: DictConfig):
+    """Hydra CLI entrypoint wrapper."""
+    return run_pipeline_impl(config)
+
+
 if __name__ == "__main__":
     go()
+
+
+# Implement a FastAPI app to expose the pipeline as an API
+app = fastapi.FastAPI()
+
+from omegaconf import OmegaConf
+
+@app.post("/run_pipeline/", response_model=None)
+def run_pipeline_endpoint(config: dict):
+    """API endpoint to run the ML pipeline. Accepts a plain JSON body (dict)."""
+    cfg = OmegaConf.create(config)
+    cv_accuracy = run_pipeline_impl(cfg)
+    return {"cv_accuracy": cv_accuracy}
