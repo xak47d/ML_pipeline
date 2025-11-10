@@ -10,6 +10,7 @@ import logging
 from omegaconf import DictConfig
 import fastapi
 from typing import Any, Dict, List, Optional
+import traceback
 import pandas as pd
 
 logging.basicConfig(level=logging.INFO)
@@ -155,17 +156,27 @@ def _model_try_paths() -> List[str]:
     """Return candidate paths to look for model artifacts without calling hydra at import time."""
     paths = [
         os.path.join(os.getcwd(), "xgboost_dir"),
+        os.path.join(os.getcwd(), "src", "train_model", "xgboost_dir"),
         "xgboost_dir",
+        os.path.join("src", "train_model", "xgboost_dir"),
     ]
     try:
         # call get_original_cwd only when hydra is available/initialized
         orig = hydra.utils.get_original_cwd()
         if orig:
             paths.insert(1, os.path.join(orig, "xgboost_dir"))
+            paths.insert(2, os.path.join(orig, "src", "train_model", "xgboost_dir"))
     except Exception:
         # hydra not initialized yet — ignore
         pass
-    return paths
+    # dedupe while preserving order
+    seen = set()
+    dedup = []
+    for p in paths:
+        if p and p not in seen:
+            seen.add(p)
+            dedup.append(p)
+    return dedup
 
 
 def _load_model():
@@ -188,7 +199,51 @@ def _load_model():
                 except Exception as e:
                     logger.warning(f"Failed loading model from {p}: {e}")
     raise RuntimeError("Model not found in expected locations: " + ", ".join(_model_try_paths()))
-# ...existing code...
+
+@app.get("/", response_model=None)
+def root():
+    """
+    Root endpoint with quick overview and model status.
+    """
+    overview = {
+        "service": "ml-pipeline",
+        "version": "1.0.0",
+        "endpoints": {
+            "info": "/info",
+            "health": "/health",
+            "ready": "/ready",
+            "model_files": "/model_files",
+            "model_load_test": "/model_load_test",
+            "model_execution": "/model_execution (POST)",
+            "batch_model_execution": "/batch_model_execution (POST)",
+            "docs": "/docs"
+        },
+        "note": "Use POST /model_execution or /batch_model_execution with JSON instances for inference."
+    }
+
+    try:
+        overview["health"] = health()
+    except Exception:
+        overview["health"] = {"status": "unknown"}
+
+    try:
+        overview["ready"] = ready()
+    except Exception:
+        overview["ready"] = {"ready": False, "reason": "ready check failed"}
+
+    try:
+        # lightweight model status (do not raise on failure)
+        m = None
+        try:
+            m = _load_model()
+        except Exception as e:
+            overview["model"] = {"model_loaded": False, "error": str(e)}
+        else:
+            overview["model"] = {"model_loaded": True, "model_type": type(m).__name__}
+    except Exception:
+        overview["model"] = {"model_loaded": False, "error": "status check failed"}
+
+    return overview
 
 @app.get("/info", response_model=None)
 def info():
@@ -221,6 +276,31 @@ def ready():
     except Exception as e:
         return {"ready": False, "reason": str(e)}
 
+@app.get("/model_files", response_model=None)
+def model_files():
+    """List files under candidate model locations (diagnostic)."""
+    out = {}
+    for p in _model_try_paths():
+        try:
+            if os.path.exists(p) and os.path.isdir(p):
+                out[p] = sorted(os.listdir(p))
+            elif os.path.exists(p):
+                out[p] = ["(file)"]
+            else:
+                out[p] = "missing"
+        except Exception as e:
+            out[p] = f"error: {e}"
+    return out
+
+@app.get("/model_load_test", response_model=None)
+def model_load_test():
+    """Attempt to load model and return success or traceback for debugging."""
+    try:
+        m = _load_model()
+        return {"loaded": True, "model_type": type(m).__name__}
+    except Exception as e:
+        tb = traceback.format_exc()
+        return {"loaded": False, "error": str(e), "traceback": tb}
 
 def _normalize_instances(payload: Any) -> List[Dict[str, Any]]:
     if isinstance(payload, dict) and "instances" in payload:
