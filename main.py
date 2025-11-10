@@ -149,6 +149,11 @@ app = fastapi.FastAPI()
 from omegaconf import OmegaConf
 
 @app.post("/run_pipeline/", response_model=None)
+
+@app.get("/")
+def root():
+    return {"status": "ok", "endpoints": ["/run_pipeline/","/docs","/redoc"]}
+
 def run_pipeline_endpoint(config: dict):
     """API endpoint to run the ML pipeline. Accepts a plain JSON body (dict)."""
     cfg = OmegaConf.create(config)
